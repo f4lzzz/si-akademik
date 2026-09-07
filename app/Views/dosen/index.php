@@ -35,8 +35,7 @@
                                 <td><?= $dsn['nidn'] ?></td>
                                 <td><?= $dsn['nama'] ?></td>
                                 <td>
-                                    <a
-                                        href="/si-akademik/public/dosen/detail?nidn=<?= $dsn['nidn']; ?>"
+                                    <a href="/si-akademik/public/dosen/detail?nidn=<?= $dsn['nidn']; ?>"
                                         class="btn btn-primary btn-sm">
                                         Detail
                                     </a>
@@ -46,9 +45,20 @@
                     </tbody>
                 </table>
 
-                <a href="/si-akademik/public/mahasiswa" class="btn btn-secondary">
-                    Daftar Mahasiswa
-                </a>
+                <div class="d-flex justify-content-between mt-4">
+
+                    <!-- Button Kembali -->
+                    <a href="/si-akademik/public/" class="btn btn-secondary">
+                        ← Beranda
+                    </a>
+
+                    <!-- Button Mahasiswa -->
+                    <a href="/si-akademik/public/mahasiswa" class="btn btn-primary">
+                        Data Mahasiswa →
+                    </a>
+
+                </div>
+
 
             </div>
         </div>
@@ -57,4 +67,4 @@
 
 </body>
 
-</html> 
+</html>
