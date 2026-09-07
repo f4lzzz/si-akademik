@@ -28,5 +28,4 @@ if ($url == 'mahasiswa') {
 } else {
 
     echo "404 - Halaman tidak ditemukan";
-
 }
