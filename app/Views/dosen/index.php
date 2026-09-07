@@ -36,7 +36,7 @@
                                 <td><?= $dsn['nama'] ?></td>
                                 <td>
                                     <a
-                                        href="?url=dosen/detail&nidn=<?= $dsn['nidn']; ?>"
+                                        href="/si-akademik/public/dosen/detail?nidn=<?= $dsn['nidn']; ?>"
                                         class="btn btn-primary btn-sm">
                                         Detail
                                     </a>
@@ -46,7 +46,7 @@
                     </tbody>
                 </table>
 
-                <a href="?url=mahasiswa" class="btn btn-secondary">
+                <a href="/si-akademik/public/mahasiswa" class="btn btn-secondary">
                     Daftar Mahasiswa
                 </a>
 
@@ -57,4 +57,4 @@
 
 </body>
 
-</html>
+</html> 

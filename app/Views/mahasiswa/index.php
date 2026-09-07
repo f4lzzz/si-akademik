@@ -37,8 +37,7 @@
                                 <td><?= $mhs['nama'] ?></td>
                                 <td><?= $mhs['prodi'] ?></td>
                                 <td>
-                                    <a
-                                        href="?url=mahasiswa/detail&nim=<?= $mhs['nim']; ?>"
+                                    <a href="/si-akademik/public/mahasiswa/detail?nim=<?= $mhs['nim']; ?>"
                                         class="btn btn-primary btn-sm">
                                         Detail
                                     </a>
@@ -48,7 +47,7 @@
                     </tbody>
                 </table>
 
-                <a href="?url=dosen" class="btn btn-secondary">
+                <a href="/si-akademik/public/dosen" class="btn btn-secondary">
                     Daftar Dosen
                 </a>
 

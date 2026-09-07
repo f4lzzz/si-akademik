@@ -15,7 +15,7 @@ class DosenController
     public function detail()
     {
         $model = new Dosen();
-        $nidn = $_GET['nidn'];
+        $nidn = $_GET['nidn'] ?? null;
         $dosen = $model->getByNidn($nidn);
 
         require_once __DIR__ . '/../Views/dosen/detail.php';

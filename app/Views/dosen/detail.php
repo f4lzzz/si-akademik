@@ -35,7 +35,7 @@
 
                 </table>
 
-                <a href="?url=dosen" class="btn btn-secondary">
+                <a href="/si-akademik/public/dosen" class="btn btn-secondary">
                     Kembali
                 </a>
 

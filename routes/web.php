@@ -1,31 +1,19 @@
-<?php 
+<?php
 
-require_once __DIR__ . '/../app/Controllers/MahasiswaController.php';
-require_once __DIR__ . '/../app/Controllers/Dosencontroller.php';
+$routes = [
 
-$url = $_GET['url'] ?? 'mahasiswa';
+    'GET' => [
 
-if ($url == 'mahasiswa') {
+        '/' => ['HomeController', 'index'],
 
-    $controller = new MahasiswaController();    
-    $controller->index();
+        '/mahasiswa' => ['MahasiswaController', 'index'],
 
-} elseif ($url == 'mahasiswa/detail') {
+        '/mahasiswa/detail' => ['MahasiswaController', 'detail'],
 
-    $controller = new MahasiswaController();
-    $controller->detail();
+        '/dosen' => ['DosenController', 'index'],
 
-} elseif ($url == 'dosen') {
+        '/dosen/detail' => ['DosenController', 'detail'],
 
-    $controller = new DosenController();
-    $controller->index();
+    ],
 
-} elseif ($url == 'dosen/detail') {
-
-    $controller = new DosenController();
-    $controller->detail();
-
-} else {
-
-    echo "404 - Halaman tidak ditemukan";
-}
+];
