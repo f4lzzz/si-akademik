@@ -16,10 +16,44 @@ if (str_starts_with($uri, $base)) {
 
 $method = $_SERVER['REQUEST_METHOD'];
 
-// Routing berdasarkan route yang ada
+
+// ==================================================
+// ROUTING
+// ==================================================
+
 if (isset($routes[$method][$uri])) {
 
     [$controllerName, $action] = $routes[$method][$uri];
+
+
+    // ==================================================
+    // MIDDLEWARE
+    // ==================================================
+
+    // Halaman yang harus login terlebih dahulu
+    $protectedRoutes = [
+        '/dashboard',
+        '/mahasiswa',
+        '/mahasiswa/detail',
+        '/mahasiswa/search',
+        '/mahasiswa/create',
+        '/mahasiswa/session',
+        '/mahasiswa/cookie',
+        '/dosen',
+        '/dosen/detail'
+    ];
+
+    if (in_array($uri, $protectedRoutes)) {
+
+        require_once __DIR__ . '/../app/Middleware/AuthMiddleware.php';
+
+        AuthMiddleware::handle();
+    }
+
+
+    // ==================================================
+    // CONTROLLER
+    // ==================================================
 
     require_once __DIR__ . '/../app/Controllers/' . $controllerName . '.php';
 
@@ -28,8 +62,16 @@ if (isset($routes[$method][$uri])) {
     $controller->$action();
 
 
-// Routing dinamis: /mahasiswa/5
+// ==================================================
+// ROUTING DINAMIS: /mahasiswa/5
+// ==================================================
+
 } elseif ($method === 'GET' && preg_match('#^/mahasiswa/([0-9]+)$#', $uri, $matches)) {
+
+    // Middleware untuk routing dinamis
+    require_once __DIR__ . '/../app/Middleware/AuthMiddleware.php';
+
+    AuthMiddleware::handle();
 
     require_once __DIR__ . '/../app/Controllers/MahasiswaController.php';
 
@@ -40,7 +82,10 @@ if (isset($routes[$method][$uri])) {
     $controller->show($id);
 
 
-// Jika route tidak ditemukan
+// ==================================================
+// 404
+// ==================================================
+
 } else {
 
     http_response_code(404);
