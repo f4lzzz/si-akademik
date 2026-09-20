@@ -55,7 +55,9 @@ if (isset($routes[$method][$uri])) {
     // CONTROLLER
     // ==================================================
 
-    require_once __DIR__ . '/../app/Controllers/' . $controllerName . '.php';
+    if (!class_exists($controllerName)) {
+        require_once __DIR__ . '/../app/Controllers/' . $controllerName . '.php';
+    }
 
     $controller = new $controllerName();
 
@@ -73,7 +75,9 @@ if (isset($routes[$method][$uri])) {
 
     AuthMiddleware::handle();
 
-    require_once __DIR__ . '/../app/Controllers/MahasiswaController.php';
+    if (!class_exists('MahasiswaController')) {
+        require_once __DIR__ . '/../app/Controllers/MahasiswaController.php';
+    }
 
     $controller = new MahasiswaController();
 

@@ -1,47 +1,34 @@
 <?php
 
+require_once __DIR__ . '/../../config/database.php'; 
+
 class Dosen
 {
-    private $dosen = [
-        [
-            'nidn' => '001',
-            'nama' => 'Bu Qonita'
-        ],
-        [
-            'nidn' => '002',
-            'nama' => 'Pak Radit'
-        ],
-        [
-            'nidn' => '003',
-            'nama' => 'Bu Ulfa'
-        ],
-        [
-            'nidn' => '004',
-            'nama' => 'Pak Fikri'
-        ],
-        [
-            'nidn' => '005',
-            'nama' => 'Bu Nimah'
-        ],
-        [
-            'nidn' => '006',
-            'nama' => 'Pak Roki'
-        ],
-    ];
+    private $pdo;
 
-    public function getAll()    
+    public function __construct(?PDO $pdo = null)
     {
-        return $this->dosen;
+        if ($pdo === null) {
+            global $pdo; 
+            $this->pdo = $pdo;
+        } else {
+            $this->pdo = $pdo;
+        }
+    }
+
+    public function getAll()
+    {
+        $stmt = $this->pdo->query("SELECT * FROM dosen ORDER BY nama ASC");
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getByNidn($nidn)
     {
-        foreach ($this->dosen as $dsn) {
-            if ($dsn['nidn'] == $nidn) {
-                return $dsn;
-            }
-        }
+        $stmt = $this->pdo->prepare("SELECT * FROM dosen WHERE nidn = :nidn");
+        $stmt->execute(['nidn' => $nidn]);
 
-        return null;
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $result ? $result : null;
     }
 }

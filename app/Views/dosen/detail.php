@@ -21,19 +21,28 @@
 
                 <h2 class="card-title mb-4">Detail Dosen</h2>
 
-                <table class="table table-bordered">
+                <?php if (!empty($dosen)): ?>
+                    <table class="table table-bordered">
 
-                    <tr>
-                        <th width="200">NIDN</th>
-                        <td><?= $dosen['nidn'] ?></td>
-                    </tr>
+                        <tr>
+                            <th width="200">NIDN</th>
+                            <td><?= htmlspecialchars($dosen['nidn']) ?></td>
+                        </tr>
 
-                    <tr>
-                        <th>Nama</th>
-                        <td><?= $dosen['nama'] ?></td>
-                    </tr>
+                        <tr>
+                            <th>Nama</th>
+                            <td><?= htmlspecialchars($dosen['nama']) ?></td>
+                        </tr>
 
-                </table>
+                        <tr>
+                            <th>Bidang Keahlian</th>
+                            <td><?= htmlspecialchars($dosen['bidang_keahlian'] ?? '-') ?></td>
+                        </tr>
+
+                    </table>
+                <?php else: ?>
+                    <div class="alert alert-danger">Data dosen tidak ditemukan.</div>
+                <?php endif; ?>
 
                 <a href="/si-akademik/public/dosen" class="btn btn-secondary">
                     Kembali
