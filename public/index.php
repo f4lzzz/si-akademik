@@ -3,6 +3,7 @@
 session_start();
 
 require_once __DIR__ . '/../config/config.php';
+require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../routes/web.php';
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
@@ -33,14 +34,21 @@ if (isset($routes[$method][$uri])) {
     // Halaman yang harus login terlebih dahulu
     $protectedRoutes = [
         '/dashboard',
+
+        // Mahasiswa
         '/mahasiswa',
         '/mahasiswa/detail',
         '/mahasiswa/search',
         '/mahasiswa/create',
         '/mahasiswa/session',
         '/mahasiswa/cookie',
+
+        // Dosen
         '/dosen',
-        '/dosen/detail'
+        '/dosen/detail',
+        '/dosen/create',
+        '/dosen/edit',
+        '/dosen/delete'
     ];
 
     if (in_array($uri, $protectedRoutes)) {
@@ -61,7 +69,26 @@ if (isset($routes[$method][$uri])) {
 
     $controller = new $controllerName();
 
-    $controller->$action();
+
+    // ==================================================
+    // DELETE DOSEN
+    // ==================================================
+
+    if ($controllerName === 'DosenController' && $action === 'delete') {
+
+        $id = $_GET['id'] ?? null;
+
+        if (!$id) {
+            header('Location: /si-akademik/public/dosen');
+            exit;
+        }
+
+        $controller->$action($id);
+
+    } else {
+
+        $controller->$action();
+    }
 
 
 // ==================================================

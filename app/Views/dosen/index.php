@@ -18,31 +18,75 @@
         <div class="card shadow">
             <div class="card-body">
 
-                <h2 class="card-title mb-4">Daftar Dosen</h2>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+
+                    <h2 class="card-title mb-0">Daftar Dosen</h2>
+
+                    <a href="/si-akademik/public/dosen/create"
+                        class="btn btn-success">
+                        + Tambah Dosen
+                    </a>
+
+                </div>
 
                 <table class="table table-bordered table-striped">
+
                     <thead class="table-dark">
                         <tr>
                             <th>NIDN</th>
                             <th>Nama</th>
+                            <th>Bidang Keahlian</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
 
                     <tbody>
+
                         <?php foreach ($dosen as $dsn): ?>
+
                             <tr>
-                                <td><?= $dsn['nidn'] ?></td>
-                                <td><?= $dsn['nama'] ?></td>
+
                                 <td>
-                                    <a href="/si-akademik/public/dosen/detail?nidn=<?= $dsn['nidn']; ?>"
+                                    <?= htmlspecialchars($dsn['nidn']) ?>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($dsn['nama']) ?>
+                                </td>
+
+                                <td>
+                                    <?= htmlspecialchars($dsn['bidang_keahlian']) ?>
+                                </td>
+
+                                <td>
+
+                                    <!-- Detail -->
+                                    <a href="/si-akademik/public/dosen/detail?id=<?= $dsn['id'] ?>"
                                         class="btn btn-primary btn-sm">
                                         Detail
                                     </a>
+
+                                    <!-- Edit -->
+                                    <a href="/si-akademik/public/dosen/edit?id=<?= $dsn['id'] ?>"
+                                        class="btn btn-warning btn-sm">
+                                        Edit
+                                    </a>
+
+                                    <!-- Hapus -->
+                                    <a href="/si-akademik/public/dosen/delete?id=<?= $dsn['id'] ?>"
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Yakin ingin menghapus data dosen ini?')">
+                                        Hapus
+                                    </a>
+
                                 </td>
+
                             </tr>
+
                         <?php endforeach; ?>
+
                     </tbody>
+
                 </table>
 
                 <div class="d-flex justify-content-between mt-4">
@@ -58,7 +102,6 @@
                     </a>
 
                 </div>
-
 
             </div>
         </div>

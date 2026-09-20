@@ -28,6 +28,11 @@ $routes = [
         '/dosen' => ['DosenController', 'index'],
         '/dosen/detail' => ['DosenController', 'detail'],
 
+        // CRUD Dosen
+        '/dosen/create' => ['DosenController', 'create'],
+        '/dosen/edit' => ['DosenController', 'edit'],
+        '/dosen/delete' => ['DosenController', 'delete'],
+
     ],
 
     'POST' => [
@@ -37,6 +42,10 @@ $routes = [
 
         // Simpan Mahasiswa
         '/mahasiswa' => ['MahasiswaController', 'store'],
+
+        // CRUD Dosen
+        '/dosen/store' => ['DosenController', 'store'],
+        '/dosen/update' => ['DosenController', 'update'],
 
     ],
 
