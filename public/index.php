@@ -31,7 +31,6 @@ if (isset($routes[$method][$uri])) {
     // MIDDLEWARE
     // ==================================================
 
-    // Halaman yang harus login terlebih dahulu
     $protectedRoutes = [
         '/dashboard',
 
@@ -40,6 +39,7 @@ if (isset($routes[$method][$uri])) {
         '/mahasiswa/detail',
         '/mahasiswa/search',
         '/mahasiswa/create',
+        '/mahasiswa/edit',
         '/mahasiswa/session',
         '/mahasiswa/cookie',
 
@@ -64,22 +64,73 @@ if (isset($routes[$method][$uri])) {
     // ==================================================
 
     if (!class_exists($controllerName)) {
-        require_once __DIR__ . '/../app/Controllers/' . $controllerName . '.php';
+
+        require_once __DIR__ .
+            '/../app/Controllers/' .
+            $controllerName .
+            '.php';
     }
 
-    $controller = new $controllerName();
+
+    // ==================================================
+    // DEPENDENCY INJECTION
+    // ==================================================
+
+    if ($controllerName === 'MahasiswaController') {
+
+        // Repository Mahasiswa
+        require_once __DIR__ .
+            '/../app/Repositories/MahasiswaRepository.php';
+
+        // Repository Dosen
+        require_once __DIR__ .
+            '/../app/Repositories/DosenRepository.php';
+
+
+        // Database
+        $database = new Database();
+
+
+        // Mahasiswa Repository
+        $mahasiswaRepository =
+            new MahasiswaRepository($database);
+
+
+        // Dosen Repository
+        $dosenRepository =
+            new DosenRepository($database);
+
+
+        // Controller menerima kedua repository
+        $controller = new MahasiswaController(
+            $mahasiswaRepository,
+            $dosenRepository
+        );
+
+    } else {
+
+        // Controller lainnya
+        $controller = new $controllerName();
+    }
 
 
     // ==================================================
     // DELETE DOSEN
     // ==================================================
 
-    if ($controllerName === 'DosenController' && $action === 'delete') {
+    if (
+        $controllerName === 'DosenController'
+        && $action === 'delete'
+    ) {
 
         $id = $_GET['id'] ?? null;
 
         if (!$id) {
-            header('Location: /si-akademik/public/dosen');
+
+            header(
+                'Location: /si-akademik/public/dosen'
+            );
+
             exit;
         }
 
@@ -92,24 +143,68 @@ if (isset($routes[$method][$uri])) {
 
 
 // ==================================================
-// ROUTING DINAMIS: /mahasiswa/5
+// ROUTING DINAMIS
+// /mahasiswa/5
 // ==================================================
 
-} elseif ($method === 'GET' && preg_match('#^/mahasiswa/([0-9]+)$#', $uri, $matches)) {
+} elseif (
+    $method === 'GET'
+    && preg_match(
+        '#^/mahasiswa/([0-9]+)$#',
+        $uri,
+        $matches
+    )
+) {
 
-    // Middleware untuk routing dinamis
-    require_once __DIR__ . '/../app/Middleware/AuthMiddleware.php';
+    // Middleware
+    require_once __DIR__ .
+        '/../app/Middleware/AuthMiddleware.php';
 
     AuthMiddleware::handle();
 
+
+    // Controller
     if (!class_exists('MahasiswaController')) {
-        require_once __DIR__ . '/../app/Controllers/MahasiswaController.php';
+
+        require_once __DIR__ .
+            '/../app/Controllers/MahasiswaController.php';
     }
 
-    $controller = new MahasiswaController();
 
+    // Repository
+    require_once __DIR__ .
+        '/../app/Repositories/MahasiswaRepository.php';
+
+    require_once __DIR__ .
+        '/../app/Repositories/DosenRepository.php';
+
+
+    // Database
+    $database = new Database();
+
+
+    // Repository Mahasiswa
+    $mahasiswaRepository =
+        new MahasiswaRepository($database);
+
+
+    // Repository Dosen
+    $dosenRepository =
+        new DosenRepository($database);
+
+
+    // Controller
+    $controller = new MahasiswaController(
+        $mahasiswaRepository,
+        $dosenRepository
+    );
+
+
+    // ID dari URL
     $id = $matches[1];
 
+
+    // Jalankan show
     $controller->show($id);
 
 

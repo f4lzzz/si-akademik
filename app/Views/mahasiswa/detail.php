@@ -25,17 +25,24 @@
 
                     <tr>
                         <th width="200">NIM</th>
-                        <td><?= $mahasiswa['nim'] ?></td>
+                        <td><?= htmlspecialchars($mahasiswa['nim']) ?></td>
                     </tr>
 
                     <tr>
                         <th>Nama</th>
-                        <td><?= $mahasiswa['nama'] ?></td>
+                        <td><?= htmlspecialchars($mahasiswa['nama']) ?></td>
                     </tr>
 
                     <tr>
                         <th>Program Studi</th>
-                        <td><?= $mahasiswa['prodi'] ?></td>
+                        <td><?= htmlspecialchars($mahasiswa['prodi']) ?></td>
+                    </tr>
+
+                    <tr>
+                        <th>Dosen Pembimbing</th>
+                        <td>
+                            <?= htmlspecialchars($mahasiswa['nama_dosen'] ?? 'Belum ditentukan') ?>
+                        </td>
                     </tr>
 
                 </table>

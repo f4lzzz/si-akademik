@@ -1,43 +1,95 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Tambah Dosen</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+    >
 </head>
+
 <body>
 
-    <h1>Tambah Dosen</h1>
+<div class="container mt-5">
 
-    <form action="/si-akademik/public/dosen/store" method="POST">
+    <div class="card shadow">
 
-        <div>
-            <label for="nidn">NIDN</label>
-            <br>
-            <input type="text" name="nidn" id="nidn" required>
+        <div class="card-body">
+
+            <h2 class="mb-4">
+                Tambah Dosen
+            </h2>
+
+            <form
+                method="POST"
+                action="/si-akademik/public/dosen/store"
+            >
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        NIDN
+                    </label>
+
+                    <input
+                        type="text"
+                        name="nidn"
+                        class="form-control"
+                        required
+                    >
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Nama
+                    </label>
+
+                    <input
+                        type="text"
+                        name="nama"
+                        class="form-control"
+                        required
+                    >
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Bidang Keahlian
+                    </label>
+
+                    <input
+                        type="text"
+                        name="bidang_keahlian"
+                        class="form-control"
+                        required
+                    >
+                </div>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Simpan
+                </button>
+
+                <a
+                    href="/si-akademik/public/dosen"
+                    class="btn btn-secondary"
+                >
+                    Kembali
+                </a>
+
+            </form>
+
         </div>
 
-        <br>
+    </div>
 
-        <div>
-            <label for="nama">Nama</label>
-            <br>
-            <input type="text" name="nama" id="nama" required>
-        </div>
-
-        <br>
-
-        <div>
-            <label for="bidang_keahlian">Bidang Keahlian</label>
-            <br>
-            <input type="text" name="bidang_keahlian" id="bidang_keahlian" required>
-        </div>
-
-        <br>
-
-        <button type="submit">Simpan</button>
-
-    </form>
+</div>
 
 </body>
 </html>

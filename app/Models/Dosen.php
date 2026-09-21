@@ -1,103 +1,75 @@
 <?php
 
-require_once __DIR__ . '/../../config/database.php';
-
 class Dosen
 {
-    private $pdo;
+    private $id;
+    private $nidn;
+    private $nama;
+    private $bidang_keahlian;
 
-    public function __construct(?PDO $pdo = null)
+    // =========================
+    // GETTER
+    // =========================
+
+    public function getId()
     {
-        if ($pdo === null) {
-            global $pdo;
-            $this->pdo = $pdo;
-        } else {
-            $this->pdo = $pdo;
+        return $this->id;
+    }
+
+    public function getNidn()
+    {
+        return $this->nidn;
+    }
+
+    public function getNama()
+    {
+        return $this->nama;
+    }
+
+    public function getBidangKeahlian()
+    {
+        return $this->bidang_keahlian;
+    }
+
+    // =========================
+    // SETTER
+    // =========================
+
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function setNidn($nidn)
+    {
+        if (!is_numeric($nidn)) {
+            throw new InvalidArgumentException(
+                'NIDN harus berupa angka.'
+            );
         }
+
+        $this->nidn = $nidn;
     }
 
-    public function getAll()
+    public function setNama($nama)
     {
-        $stmt = $this->pdo->query(
-            "SELECT * FROM dosen ORDER BY nama ASC"
-        );
+        if (trim($nama) === '') {
+            throw new InvalidArgumentException(
+                'Nama tidak boleh kosong.'
+            );
+        }
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $this->nama = $nama;
     }
 
-    public function getByNidn($nidn)
+    public function setBidangKeahlian($bidang_keahlian)
     {
-        $stmt = $this->pdo->prepare(
-            "SELECT * FROM dosen WHERE nidn = :nidn"
-        );
+        if (trim($bidang_keahlian) === '') {
+            throw new InvalidArgumentException(
+                'Bidang keahlian tidak boleh kosong.'
+            );
+        }
 
-        $stmt->execute([
-            'nidn' => $nidn
-        ]);
-
-        $result = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        return $result ? $result : null;
-    }
-
-    // STEP 3: Mencari dosen berdasarkan ID
-    public function getById($id)
-    {
-        $stmt = $this->pdo->prepare(
-            "SELECT * FROM dosen WHERE id = :id"
-        );
-
-        $stmt->execute([
-            'id' => $id
-        ]);
-
-        return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-    // STEP 3: Menambah data dosen
-    public function create($data)
-    {
-        $stmt = $this->pdo->prepare(
-            "INSERT INTO dosen
-            (nidn, nama, bidang_keahlian)
-            VALUES (:nidn, :nama, :bidang_keahlian)"
-        );
-
-        return $stmt->execute([
-            'nidn' => $data['nidn'],
-            'nama' => $data['nama'],
-            'bidang_keahlian' => $data['bidang_keahlian']
-        ]);
-    }
-
-    // STEP 4: Mengubah data dosen
-    public function update($id, $data)
-    {
-        $stmt = $this->pdo->prepare(
-            "UPDATE dosen
-            SET nidn = :nidn,
-                nama = :nama,
-                bidang_keahlian = :bidang_keahlian
-            WHERE id = :id"
-        );
-
-        return $stmt->execute([
-            'id' => $id,
-            'nidn' => $data['nidn'],
-            'nama' => $data['nama'],
-            'bidang_keahlian' => $data['bidang_keahlian']
-        ]);
-    }
-
-    // STEP 4: Menghapus data dosen
-    public function delete($id)
-    {
-        $stmt = $this->pdo->prepare(
-            "DELETE FROM dosen WHERE id = :id"
-        );
-
-        return $stmt->execute([
-            'id' => $id
-        ]);
+        $this->bidang_keahlian = $bidang_keahlian;
     }
 }

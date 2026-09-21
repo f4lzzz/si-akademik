@@ -4,27 +4,36 @@ $routes = [
 
     'GET' => [
 
-        // Halaman awal → Login
+        // =========================
+        // HALAMAN AWAL
+        // =========================
         '/' => ['AuthController', 'login'],
 
-        // Login
+        // =========================
+        // LOGIN
+        // =========================
         '/login' => ['AuthController', 'login'],
-
-        // Logout
         '/logout' => ['AuthController', 'logout'],
 
-        // Dashboard
+        // =========================
+        // DASHBOARD
+        // =========================
         '/dashboard' => ['AuthController', 'dashboard'],
 
-        // Mahasiswa
+        // =========================
+        // MAHASISWA
+        // =========================
         '/mahasiswa' => ['MahasiswaController', 'index'],
         '/mahasiswa/detail' => ['MahasiswaController', 'detail'],
         '/mahasiswa/search' => ['MahasiswaController', 'search'],
         '/mahasiswa/create' => ['MahasiswaController', 'create'],
+        '/mahasiswa/edit' => ['MahasiswaController', 'edit'],
         '/mahasiswa/session' => ['MahasiswaController', 'sessionDemo'],
         '/mahasiswa/cookie' => ['MahasiswaController', 'cookieDemo'],
 
-        // Dosen
+        // =========================
+        // DOSEN
+        // =========================
         '/dosen' => ['DosenController', 'index'],
         '/dosen/detail' => ['DosenController', 'detail'],
 
@@ -37,13 +46,21 @@ $routes = [
 
     'POST' => [
 
-        // Proses Login
+        // =========================
+        // LOGIN
+        // =========================
         '/login/process' => ['AuthController', 'processLogin'],
 
-        // Simpan Mahasiswa
+        // =========================
+        // CRUD MAHASISWA
+        // =========================
         '/mahasiswa' => ['MahasiswaController', 'store'],
+        '/mahasiswa/update' => ['MahasiswaController', 'update'],
+        '/mahasiswa/delete' => ['MahasiswaController', 'delete'],
 
-        // CRUD Dosen
+        // =========================
+        // CRUD DOSEN
+        // =========================
         '/dosen/store' => ['DosenController', 'store'],
         '/dosen/update' => ['DosenController', 'update'],
 

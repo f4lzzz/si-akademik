@@ -1,779 +1,636 @@
 <?php
 
-require_once __DIR__ . '/../Models/Mahasiswa.php';
+require_once __DIR__ .
+    '/../Models/Mahasiswa.php';
+
+require_once __DIR__ .
+    '/../Repositories/MahasiswaRepository.php';
+
+require_once __DIR__ .
+    '/../Repositories/DosenRepository.php';
+
 
 class MahasiswaController
 {
-    // =========================
-    // MENAMPILKAN DAFTAR MAHASISWA
-    // =========================
+    private MahasiswaRepository $repo;
+
+    private DosenRepository $dosenRepo;
+
+
+    // ==================================================
+    // CONSTRUCTOR
+    // ==================================================
+
+    public function __construct(
+        MahasiswaRepository $repo,
+        DosenRepository $dosenRepo
+    ) {
+
+        $this->repo = $repo;
+
+        $this->dosenRepo = $dosenRepo;
+    }
+
+
+    // ==================================================
+    // INDEX
+    // ==================================================
+
     public function index()
     {
-        global $pdo;
+        $mahasiswa = $this->repo->all();
 
-        $model = new Mahasiswa($pdo);
-
-        $mahasiswa = $model->getAll();
-
-        require_once __DIR__ . '/../Views/mahasiswa/index.php';
+        require_once __DIR__ .
+            '/../Views/mahasiswa/index.php';
     }
 
 
-    // =========================
-    // MENAMPILKAN DETAIL MAHASISWA
-    // =========================
+    // ==================================================
+    // DETAIL
+    // ==================================================
+
     public function detail()
     {
-        global $pdo;
-
-        $model = new Mahasiswa($pdo);
-
         $nim = $_GET['nim'] ?? null;
 
+
         if (!$nim) {
-            header('Location: /si-akademik/public/mahasiswa');
+
+            header(
+                'Location: /si-akademik/public/mahasiswa'
+            );
+
             exit;
         }
 
-        $mahasiswa = $model->getByNim($nim);
+
+        $mahasiswa =
+            $this->repo->findByNim($nim);
+
 
         if (!$mahasiswa) {
+
             echo "Data mahasiswa tidak ditemukan.";
+
             exit;
         }
 
-        require_once __DIR__ . '/../Views/mahasiswa/detail.php';
+
+        require_once __DIR__ .
+            '/../Views/mahasiswa/detail.php';
     }
 
 
-    // =========================
-    // ROUTING DINAMIS
+    // ==================================================
+    // SHOW
     // /mahasiswa/5
-    // =========================
+    // ==================================================
+
     public function show($id)
     {
-        echo "
-        <!DOCTYPE html>
-        <html lang='id'>
+        echo "<h2>Detail Mahasiswa</h2>";
 
-        <head>
+        echo "<p>ID Mahasiswa: " .
+            htmlspecialchars($id) .
+            "</p>";
 
-            <meta charset='UTF-8'>
-
-            <meta
-                name='viewport'
-                content='width=device-width, initial-scale=1.0'
-            >
-
-            <title>Routing Dinamis</title>
-
-            <link
-                href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css'
-                rel='stylesheet'
-            >
-
-        </head>
-
-        <body>
-
-            <div class='container mt-5'>
-
-                <div class='card shadow'>
-
-                    <div class='card-body text-center'>
-
-                        <h1 class='mb-3'>
-                            Routing Dinamis Berhasil
-                        </h1>
-
-                        <p class='lead'>
-                            ID Mahasiswa yang diterima:
-                        </p>
-
-                        <h2 class='text-primary mb-4'>
-                            $id
-                        </h2>
-
-                        <p class='text-muted'>
-                            Method <strong>show()</strong> berhasil
-                            menerima parameter ID dari URL.
-                        </p>
-
-                        <a
-                            href='/si-akademik/public/mahasiswa'
-                            class='btn btn-secondary'
-                        >
-                            Kembali ke Mahasiswa
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </body>
-
-        </html>
-        ";
+        echo "<a href='/si-akademik/public/mahasiswa'>";
+        echo "Kembali";
+        echo "</a>";
     }
 
 
-    // =========================
-    // FORM GET
-    // =========================
+    // ==================================================
+    // SEARCH
+    // ==================================================
+
     public function search()
     {
         $nim = $_GET['nim'] ?? '';
 
-        echo "
-        <!DOCTYPE html>
-        <html lang='id'>
+        $mahasiswa = null;
 
-        <head>
-
-            <meta charset='UTF-8'>
-
-            <meta
-                name='viewport'
-                content='width=device-width, initial-scale=1.0'
-            >
-
-            <title>Pencarian Mahasiswa</title>
-
-            <link
-                href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css'
-                rel='stylesheet'
-            >
-
-        </head>
-
-        <body>
-
-            <div class='container mt-5'>
-
-                <div class='card shadow'>
-
-                    <div class='card-body'>
-
-                        <h2 class='mb-4'>
-                            Pencarian Mahasiswa
-                        </h2>
-
-                        <form
-                            method='GET'
-                            action='/si-akademik/public/mahasiswa/search'
-                        >
-
-                            <div class='mb-3'>
-
-                                <label class='form-label'>
-                                    NIM
-                                </label>
-
-                                <input
-                                    type='text'
-                                    name='nim'
-                                    class='form-control'
-                                    placeholder='Masukkan NIM'
-                                    value='$nim'
-                                >
-
-                            </div>
-
-                            <button
-                                type='submit'
-                                class='btn btn-primary'
-                            >
-                                Cari
-                            </button>
-
-                            <a
-                                href='/si-akademik/public/mahasiswa'
-                                class='btn btn-secondary'
-                            >
-                                Kembali
-                            </a>
-
-                        </form>
-
-        ";
 
         if ($nim !== '') {
 
-            echo "
-                            <div class='alert alert-info mt-4'>
-
-                                NIM yang diterima melalui GET:
-
-                                <strong>
-                                    $nim
-                                </strong>
-
-                            </div>
-            ";
+            $mahasiswa =
+                $this->repo->findByNim($nim);
         }
 
-        echo "
-                    </div>
 
-                </div>
-
-            </div>
-
-        </body>
-
-        </html>
-        ";
+        require_once __DIR__ .
+            '/../Views/mahasiswa/detail.php';
     }
 
 
-    // =========================
-    // FORM TAMBAH MAHASISWA
-    // =========================
+    // ==================================================
+    // CREATE
+    // ==================================================
+
     public function create()
     {
-        echo "
-        <!DOCTYPE html>
-        <html lang='id'>
+        // Ambil semua data dosen
+        $dosen = $this->dosenRepo->all();
 
-        <head>
 
-            <meta charset='UTF-8'>
-
-            <meta
-                name='viewport'
-                content='width=device-width, initial-scale=1.0'
-            >
-
-            <title>Tambah Mahasiswa</title>
-
-            <link
-                href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css'
-                rel='stylesheet'
-            >
-
-        </head>
-
-        <body>
-
-            <div class='container mt-5'>
-
-                <div class='card shadow'>
-
-                    <div class='card-body'>
-
-                        <h2 class='mb-4'>
-                            Tambah Mahasiswa
-                        </h2>
-
-                        <form
-                            method='POST'
-                            action='/si-akademik/public/mahasiswa'
-                        >
-
-                            <div class='mb-3'>
-
-                                <label class='form-label'>
-                                    NIM
-                                </label>
-
-                                <input
-                                    type='text'
-                                    name='nim'
-                                    class='form-control'
-                                    placeholder='Masukkan NIM'
-                                >
-
-                            </div>
-
-                            <div class='mb-3'>
-
-                                <label class='form-label'>
-                                    Nama
-                                </label>
-
-                                <input
-                                    type='text'
-                                    name='nama'
-                                    class='form-control'
-                                    placeholder='Masukkan Nama'
-                                >
-
-                            </div>
-
-                            <div class='mb-3'>
-
-                                <label class='form-label'>
-                                    Program Studi
-                                </label>
-
-                                <input
-                                    type='text'
-                                    name='prodi'
-                                    class='form-control'
-                                    placeholder='Masukkan Program Studi'
-                                >
-
-                            </div>
-
-                            <button
-                                type='submit'
-                                class='btn btn-primary'
-                            >
-                                Simpan
-                            </button>
-
-                            <a
-                                href='/si-akademik/public/mahasiswa'
-                                class='btn btn-secondary'
-                            >
-                                Kembali
-                            </a>
-
-                        </form>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </body>
-
-        </html>
-        ";
+        // Kirim data dosen ke view
+        require_once __DIR__ .
+            '/../Views/mahasiswa/create.php';
     }
 
 
-    // =========================
-    // MEMPROSES FORM POST
-    // =========================
+    // ==================================================
+    // STORE
+    // ==================================================
+
     public function store()
     {
-        $nim = trim($_POST['nim'] ?? '');
-        $nama = trim($_POST['nama'] ?? '');
-        $prodi = trim($_POST['prodi'] ?? '');
+        $nim =
+            trim($_POST['nim'] ?? '');
 
-        // =========================
-        // VALIDASI INPUT
-        // =========================
+        $nama =
+            trim($_POST['nama'] ?? '');
+
+        $prodi =
+            trim($_POST['prodi'] ?? '');
+
+        $dosen_id =
+            $_POST['dosen_id'] ?? '';
+
+
         $errors = [];
 
+
+        // ==================================================
+        // VALIDASI NIM
+        // ==================================================
+
         if ($nim === '') {
-            $errors[] = 'NIM wajib diisi.';
+
+            $errors[] =
+                'NIM wajib diisi.';
+
+        } elseif (!is_numeric($nim)) {
+
+            $errors[] =
+                'NIM harus berupa angka.';
         }
+
+
+        // ==================================================
+        // VALIDASI NAMA
+        // ==================================================
 
         if ($nama === '') {
-            $errors[] = 'Nama wajib diisi.';
+
+            $errors[] =
+                'Nama wajib diisi.';
         }
+
+
+        // ==================================================
+        // VALIDASI PRODI
+        // ==================================================
 
         if ($prodi === '') {
-            $errors[] = 'Program Studi wajib diisi.';
+
+            $errors[] =
+                'Program Studi wajib diisi.';
         }
 
 
-        // =========================
-        // JIKA VALIDASI GAGAL
-        // =========================
+        // ==================================================
+        // VALIDASI DOSEN
+        // ==================================================
+
+        if ($dosen_id === '') {
+
+            $errors[] =
+                'Dosen Pembimbing wajib dipilih.';
+        }
+
+
+        // ==================================================
+        // JIKA ADA ERROR
+        // ==================================================
+
         if (!empty($errors)) {
 
-            echo "
-            <!DOCTYPE html>
-            <html lang='id'>
+            echo "<h2>Terjadi Kesalahan</h2>";
 
-            <head>
+            echo "<ul>";
 
-                <meta charset='UTF-8'>
-
-                <meta
-                    name='viewport'
-                    content='width=device-width, initial-scale=1.0'
-                >
-
-                <title>Validasi Form</title>
-
-                <link
-                    href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css'
-                    rel='stylesheet'
-                >
-
-            </head>
-
-            <body>
-
-                <div class='container mt-5'>
-
-                    <div class='card shadow'>
-
-                        <div class='card-body'>
-
-                            <h2 class='mb-4'>
-                                Validasi Form
-                            </h2>
-
-                            <div class='alert alert-danger'>
-
-                                <strong>
-                                    Terdapat kesalahan:
-                                </strong>
-
-                                <ul class='mb-0 mt-2'>
-            ";
 
             foreach ($errors as $error) {
 
-                echo "
-                                    <li>
-                                        $error
-                                    </li>
-                ";
+                echo "<li>" .
+                    htmlspecialchars($error) .
+                    "</li>";
             }
 
-            echo "
-                                </ul>
 
-                            </div>
+            echo "</ul>";
 
-                            <a
-                                href='/si-akademik/public/mahasiswa/create'
-                                class='btn btn-primary'
-                            >
-                                Kembali ke Form
-                            </a>
 
-                        </div>
-
-                    </div>
-
-                </div>
-
-            </body>
-
-            </html>
-            ";
+            echo "<a href='/si-akademik/public/mahasiswa/create'>";
+            echo "Kembali";
+            echo "</a>";
 
             return;
         }
 
 
-        // =========================
-        // SESSION
-        // =========================
-        $_SESSION['nim_mahasiswa'] = $nim;
-        $_SESSION['nama_mahasiswa'] = $nama;
-        $_SESSION['prodi_mahasiswa'] = $prodi;
+        // ==================================================
+        // OBJECT MAHASISWA
+        // ==================================================
+
+        $model = new Mahasiswa();
 
 
-        // =========================
-        // COOKIE
-        // =========================
-        setcookie(
-            'nama_pengunjung',
-            $nama,
-            time() + 3600,
-            '/'
+        try {
+
+            $model->setNim($nim);
+
+            $model->setNama($nama);
+
+            $model->setProdi($prodi);
+
+            $model->setDosenId(
+                (int) $dosen_id
+            );
+
+        } catch (
+            InvalidArgumentException $e
+        ) {
+
+            echo "<h2>Terjadi Kesalahan</h2>";
+
+            echo "<p>" .
+                htmlspecialchars(
+                    $e->getMessage()
+                ) .
+                "</p>";
+
+            echo "<a href='/si-akademik/public/mahasiswa/create'>";
+            echo "Kembali";
+            echo "</a>";
+
+            return;
+        }
+
+
+        // ==================================================
+        // SIMPAN DATA
+        // ==================================================
+
+        $this->repo->create([
+
+            'nim' =>
+                $model->getNim(),
+
+            'nama' =>
+                $model->getNama(),
+
+            'prodi' =>
+                $model->getProdi(),
+
+            'dosen_id' =>
+                $model->getDosenId()
+        ]);
+
+
+        // Kembali
+        header(
+            'Location: /si-akademik/public/mahasiswa'
+        );
+
+        exit;
+    }
+
+
+    // ==================================================
+    // EDIT
+    // ==================================================
+
+    public function edit()
+    {
+        $id =
+            $_GET['id'] ?? null;
+
+
+        if (!$id) {
+
+            header(
+                'Location: /si-akademik/public/mahasiswa'
+            );
+
+            exit;
+        }
+
+
+        // Data mahasiswa
+        $mahasiswa =
+            $this->repo->findById(
+                (int) $id
+            );
+
+
+        if (!$mahasiswa) {
+
+            echo "Data mahasiswa tidak ditemukan.";
+
+            exit;
+        }
+
+
+        // Data dosen
+        $dosen =
+            $this->dosenRepo->all();
+
+
+        require_once __DIR__ .
+            '/../Views/mahasiswa/edit.php';
+    }
+
+
+    // ==================================================
+    // UPDATE
+    // ==================================================
+
+    public function update()
+    {
+        $id =
+            $_POST['id'] ?? null;
+
+
+        if (!$id) {
+
+            header(
+                'Location: /si-akademik/public/mahasiswa'
+            );
+
+            exit;
+        }
+
+
+        $nim =
+            trim($_POST['nim'] ?? '');
+
+        $nama =
+            trim($_POST['nama'] ?? '');
+
+        $prodi =
+            trim($_POST['prodi'] ?? '');
+
+        $dosen_id =
+            $_POST['dosen_id'] ?? '';
+
+
+        $errors = [];
+
+
+        // ==================================================
+        // VALIDASI NIM
+        // ==================================================
+
+        if ($nim === '') {
+
+            $errors[] =
+                'NIM wajib diisi.';
+
+        } elseif (!is_numeric($nim)) {
+
+            $errors[] =
+                'NIM harus berupa angka.';
+        }
+
+
+        // ==================================================
+        // VALIDASI NAMA
+        // ==================================================
+
+        if ($nama === '') {
+
+            $errors[] =
+                'Nama wajib diisi.';
+        }
+
+
+        // ==================================================
+        // VALIDASI PRODI
+        // ==================================================
+
+        if ($prodi === '') {
+
+            $errors[] =
+                'Program Studi wajib diisi.';
+        }
+
+
+        // ==================================================
+        // VALIDASI DOSEN
+        // ==================================================
+
+        if ($dosen_id === '') {
+
+            $errors[] =
+                'Dosen Pembimbing wajib dipilih.';
+        }
+
+
+        // ==================================================
+        // JIKA ERROR
+        // ==================================================
+
+        if (!empty($errors)) {
+
+            echo "<h2>Terjadi Kesalahan</h2>";
+
+            echo "<ul>";
+
+
+            foreach ($errors as $error) {
+
+                echo "<li>" .
+                    htmlspecialchars($error) .
+                    "</li>";
+            }
+
+
+            echo "</ul>";
+
+
+            echo "<a href='/si-akademik/public/mahasiswa'>";
+            echo "Kembali";
+            echo "</a>";
+
+            return;
+        }
+
+
+        // ==================================================
+        // OBJECT MAHASISWA
+        // ==================================================
+
+        $model = new Mahasiswa();
+
+
+        try {
+
+            $model->setNim($nim);
+
+            $model->setNama($nama);
+
+            $model->setProdi($prodi);
+
+            $model->setDosenId(
+                (int) $dosen_id
+            );
+
+        } catch (
+            InvalidArgumentException $e
+        ) {
+
+            echo "<h2>Terjadi Kesalahan</h2>";
+
+            echo "<p>" .
+                htmlspecialchars(
+                    $e->getMessage()
+                ) .
+                "</p>";
+
+            echo "<a href='/si-akademik/public/mahasiswa'>";
+            echo "Kembali";
+            echo "</a>";
+
+            return;
+        }
+
+
+        // ==================================================
+        // UPDATE DATABASE
+        // ==================================================
+
+        $this->repo->update(
+
+            (int) $id,
+
+            [
+
+                'nim' =>
+                    $model->getNim(),
+
+                'nama' =>
+                    $model->getNama(),
+
+                'prodi' =>
+                    $model->getProdi(),
+
+                'dosen_id' =>
+                    $model->getDosenId()
+            ]
         );
 
 
-        // =========================
-        // HASIL POST
-        // =========================
-        echo "
-        <!DOCTYPE html>
-        <html lang='id'>
+        header(
+            'Location: /si-akademik/public/mahasiswa'
+        );
 
-        <head>
-
-            <meta charset='UTF-8'>
-
-            <meta
-                name='viewport'
-                content='width=device-width, initial-scale=1.0'
-            >
-
-            <title>Data Berhasil</title>
-
-            <link
-                href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css'
-                rel='stylesheet'
-            >
-
-        </head>
-
-        <body>
-
-            <div class='container mt-5'>
-
-                <div class='card shadow'>
-
-                    <div class='card-body'>
-
-                        <h2 class='text-success mb-4'>
-                            Form Berhasil Dikirim
-                        </h2>
-
-                        <div class='alert alert-success'>
-
-                            Data berhasil diterima menggunakan
-                            <strong>POST</strong>.
-
-                        </div>
-
-                        <table class='table table-bordered'>
-
-                            <tr>
-
-                                <th>NIM</th>
-
-                                <td>
-                                    $nim
-                                </td>
-
-                            </tr>
-
-                            <tr>
-
-                                <th>Nama</th>
-
-                                <td>
-                                    $nama
-                                </td>
-
-                            </tr>
-
-                            <tr>
-
-                                <th>Program Studi</th>
-
-                                <td>
-                                    $prodi
-                                </td>
-
-                            </tr>
-
-                        </table>
-
-                        <div class='alert alert-primary mt-4'>
-
-                            <strong>Session:</strong><br>
-
-                            Data mahasiswa berhasil disimpan
-                            ke dalam Session.
-
-                        </div>
-
-                        <div class='alert alert-warning'>
-
-                            <strong>Cookie:</strong><br>
-
-                            Cookie nama pengunjung berhasil dibuat
-                            dan berlaku selama 1 jam.
-
-                        </div>
-
-                        <a
-                            href='/si-akademik/public/mahasiswa'
-                            class='btn btn-secondary'
-                        >
-                            Kembali ke Mahasiswa
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </body>
-
-        </html>
-        ";
+        exit;
     }
 
 
-    // =========================
-    // MENAMPILKAN SESSION
-    // =========================
+    // ==================================================
+    // DELETE
+    // ==================================================
+
+    public function delete()
+    {
+        $id =
+            $_POST['id'] ?? null;
+
+
+        if (!$id) {
+
+            header(
+                'Location: /si-akademik/public/mahasiswa'
+            );
+
+            exit;
+        }
+
+
+        $this->repo->delete(
+            (int) $id
+        );
+
+
+        header(
+            'Location: /si-akademik/public/mahasiswa'
+        );
+
+        exit;
+    }
+
+
+    // ==================================================
+    // SESSION DEMO
+    // ==================================================
+
     public function sessionDemo()
     {
-        $nim = $_SESSION['nim_mahasiswa'] ?? 'Belum ada';
-        $nama = $_SESSION['nama_mahasiswa'] ?? 'Belum ada';
-        $prodi = $_SESSION['prodi_mahasiswa'] ?? 'Belum ada';
+        $nim =
+            $_SESSION['nim_mahasiswa']
+            ?? 'Belum ada';
 
-        echo "
-        <!DOCTYPE html>
-        <html lang='id'>
+        $nama =
+            $_SESSION['nama_mahasiswa']
+            ?? 'Belum ada';
 
-        <head>
+        $prodi =
+            $_SESSION['prodi_mahasiswa']
+            ?? 'Belum ada';
 
-            <meta charset='UTF-8'>
 
-            <meta
-                name='viewport'
-                content='width=device-width, initial-scale=1.0'
-            >
+        echo "<h2>Data Session</h2>";
 
-            <title>Session</title>
+        echo "<p>NIM: " .
+            htmlspecialchars($nim) .
+            "</p>";
 
-            <link
-                href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css'
-                rel='stylesheet'
-            >
+        echo "<p>Nama: " .
+            htmlspecialchars($nama) .
+            "</p>";
 
-        </head>
+        echo "<p>Program Studi: " .
+            htmlspecialchars($prodi) .
+            "</p>";
 
-        <body>
-
-            <div class='container mt-5'>
-
-                <div class='card shadow'>
-
-                    <div class='card-body'>
-
-                        <h2 class='text-primary mb-4'>
-                            Data Session
-                        </h2>
-
-                        <div class='alert alert-success'>
-
-                            Data mahasiswa berhasil diambil
-                            dari <strong>Session</strong>.
-
-                        </div>
-
-                        <table class='table table-bordered'>
-
-                            <tr>
-
-                                <th>NIM</th>
-
-                                <td>
-                                    $nim
-                                </td>
-
-                            </tr>
-
-                            <tr>
-
-                                <th>Nama</th>
-
-                                <td>
-                                    $nama
-                                </td>
-
-                            </tr>
-
-                            <tr>
-
-                                <th>Program Studi</th>
-
-                                <td>
-                                    $prodi
-                                </td>
-
-                            </tr>
-
-                        </table>
-
-                        <a
-                            href='/si-akademik/public/mahasiswa'
-                            class='btn btn-secondary'
-                        >
-                            Kembali ke Mahasiswa
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </body>
-
-        </html>
-        ";
+        echo "<a href='/si-akademik/public/mahasiswa'>";
+        echo "Kembali";
+        echo "</a>";
     }
 
 
-    // =========================
-    // MENAMPILKAN COOKIE
-    // =========================
+    // ==================================================
+    // COOKIE DEMO
+    // ==================================================
+
     public function cookieDemo()
     {
-        $nama = $_COOKIE['nama_pengunjung'] ?? 'Belum ada';
+        $nama =
+            $_COOKIE['nama_pengunjung']
+            ?? 'Belum ada';
 
-        echo "
-        <!DOCTYPE html>
-        <html lang='id'>
 
-        <head>
+        echo "<h2>Data Cookie</h2>";
 
-            <meta charset='UTF-8'>
+        echo "<p>Nama pengunjung: " .
+            htmlspecialchars($nama) .
+            "</p>";
 
-            <meta
-                name='viewport'
-                content='width=device-width, initial-scale=1.0'
-            >
-
-            <title>Cookie</title>
-
-            <link
-                href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css'
-                rel='stylesheet'
-            >
-
-        </head>
-
-        <body>
-
-            <div class='container mt-5'>
-
-                <div class='card shadow'>
-
-                    <div class='card-body'>
-
-                        <h2 class='text-primary mb-4'>
-                            Data Cookie
-                        </h2>
-
-                        <div class='alert alert-success'>
-
-                            Data berhasil diambil dari
-                            <strong>Cookie</strong>.
-
-                        </div>
-
-                        <p class='fs-5'>
-
-                            Nama pengunjung:
-
-                            <strong>
-                                $nama
-                            </strong>
-
-                        </p>
-
-                        <p class='text-muted'>
-                            Cookie berlaku selama 1 jam.
-                        </p>
-
-                        <a
-                            href='/si-akademik/public/mahasiswa'
-                            class='btn btn-secondary'
-                        >
-                            Kembali ke Mahasiswa
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-        </body>
-
-        </html>
-        ";
+        echo "<a href='/si-akademik/public/mahasiswa'>";
+        echo "Kembali";
+        echo "</a>";
     }
 }

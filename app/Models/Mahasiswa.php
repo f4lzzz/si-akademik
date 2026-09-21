@@ -2,40 +2,85 @@
 
 class Mahasiswa
 {
-    private $pdo;
+    private $id;
+    private $nim;
+    private $nama;
+    private $prodi;
+    private $dosen_id;
 
-    public function __construct($pdo)
+    // =========================
+    // GETTER
+    // =========================
+
+    public function getId()
     {
-        $this->pdo = $pdo;
+        return $this->id;
     }
 
-    public function getAll()
+    public function getNim()
     {
-        $sql = "SELECT mahasiswa.*, dosen.nama AS nama_dosen
-                FROM mahasiswa
-                LEFT JOIN dosen
-                ON mahasiswa.dosen_id = dosen.id
-                ORDER BY mahasiswa.nama ASC";
-
-        $stmt = $this->pdo->query($sql);
-
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $this->nim;
     }
 
-    public function getByNim($nim)
+    public function getNama()
     {
-        $sql = "SELECT mahasiswa.*, dosen.nama AS nama_dosen
-                FROM mahasiswa
-                LEFT JOIN dosen
-                ON mahasiswa.dosen_id = dosen.id
-                WHERE mahasiswa.nim = :nim";
+        return $this->nama;
+    }
 
-        $stmt = $this->pdo->prepare($sql);
+    public function getProdi()
+    {
+        return $this->prodi;
+    }
 
-        $stmt->execute([
-            'nim' => $nim
-        ]);
+    public function getDosenId()
+    {
+        return $this->dosen_id;
+    }
 
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+    // =========================
+    // SETTER
+    // =========================
+
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function setNim($nim)
+    {
+        if (!is_numeric($nim)) {
+            throw new InvalidArgumentException(
+                'NIM harus berupa angka.'
+            );
+        }
+
+        $this->nim = $nim;
+    }
+
+    public function setNama($nama)
+    {
+        if (trim($nama) === '') {
+            throw new InvalidArgumentException(
+                'Nama tidak boleh kosong.'
+            );
+        }
+
+        $this->nama = $nama;
+    }
+
+    public function setProdi($prodi)
+    {
+        if (trim($prodi) === '') {
+            throw new InvalidArgumentException(
+                'Program Studi tidak boleh kosong.'
+            );
+        }
+
+        $this->prodi = $prodi;
+    }
+
+    public function setDosenId($dosen_id)
+    {
+        $this->dosen_id = $dosen_id;
     }
 }

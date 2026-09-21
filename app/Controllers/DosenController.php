@@ -1,25 +1,41 @@
 <?php
 
 require_once __DIR__ . '/../Models/Dosen.php';
+require_once __DIR__ . '/../Repositories/DosenRepository.php';
+require_once __DIR__ . '/../../config/database.php';
 
 class DosenController
 {
+    private DosenRepository $repo;
+
+    // =========================
+    // CONSTRUCTOR
+    // =========================
+
+    public function __construct()
+    {
+        $database = new Database();
+
+        $this->repo = new DosenRepository($database);
+    }
+
+    // =========================
+    // INDEX
+    // =========================
+
     public function index()
     {
-        global $pdo;
-
-        $model = new Dosen($pdo);
-        $dosen = $model->getAll();
+        $dosen = $this->repo->all();
 
         require_once __DIR__ . '/../Views/dosen/index.php';
     }
 
+    // =========================
+    // DETAIL
+    // =========================
+
     public function detail()
     {
-        global $pdo;
-
-        $model = new Dosen($pdo);
-
         $id = $_GET['id'] ?? null;
 
         if (!$id) {
@@ -27,7 +43,7 @@ class DosenController
             exit;
         }
 
-        $dosen = $model->getById($id);
+        $dosen = $this->repo->findById((int) $id);
 
         if (!$dosen) {
             echo "Data dosen tidak ditemukan.";
@@ -37,45 +53,68 @@ class DosenController
         require_once __DIR__ . '/../Views/dosen/detail.php';
     }
 
-    // ==========================================
-    // STEP 6: CREATE
-    // ==========================================
+    // =========================
+    // CREATE
+    // =========================
 
     public function create()
     {
         require_once __DIR__ . '/../Views/dosen/create.php';
     }
 
-    // ==========================================
-    // STEP 6: STORE
-    // ==========================================
+    // =========================
+    // STORE
+    // =========================
 
     public function store()
     {
-        global $pdo;
+        $nidn = trim($_POST['nidn'] ?? '');
+        $nama = trim($_POST['nama'] ?? '');
+        $bidang_keahlian = trim(
+            $_POST['bidang_keahlian'] ?? ''
+        );
 
-        $model = new Dosen($pdo);
+        try {
 
-        $model->create([
-            'nidn' => $_POST['nidn'],
-            'nama' => $_POST['nama'],
-            'bidang_keahlian' => $_POST['bidang_keahlian']
-        ]);
+            // Membuat object Dosen
+            $model = new Dosen();
+
+            // Menggunakan Setter
+            $model->setNidn($nidn);
+            $model->setNama($nama);
+            $model->setBidangKeahlian(
+                $bidang_keahlian
+            );
+
+            // Menggunakan Getter
+            $this->repo->create([
+                'nidn' => $model->getNidn(),
+                'nama' => $model->getNama(),
+                'bidang_keahlian' =>
+                    $model->getBidangKeahlian()
+            ]);
+
+        } catch (InvalidArgumentException $e) {
+
+            echo "<h2>Terjadi Kesalahan</h2>";
+            echo "<p>{$e->getMessage()}</p>";
+            echo "<a href='/si-akademik/public/dosen/create'>";
+            echo "Kembali";
+            echo "</a>";
+
+            return;
+        }
 
         header('Location: /si-akademik/public/dosen');
         exit;
     }
 
-    // ==========================================
-    // STEP 6: EDIT
-    // ==========================================
+    // =========================
+    // EDIT
+    // =========================
 
     public function edit()
     {
-        global $pdo;
-
-        $model = new Dosen($pdo);
-
         $id = $_GET['id'] ?? null;
 
         if (!$id) {
@@ -83,7 +122,7 @@ class DosenController
             exit;
         }
 
-        $dosen = $model->getById($id);
+        $dosen = $this->repo->findById((int) $id);
 
         if (!$dosen) {
             echo "Data dosen tidak ditemukan.";
@@ -93,16 +132,12 @@ class DosenController
         require_once __DIR__ . '/../Views/dosen/edit.php';
     }
 
-    // ==========================================
-    // STEP 6: UPDATE
-    // ==========================================
+    // =========================
+    // UPDATE
+    // =========================
 
     public function update()
     {
-        global $pdo;
-
-        $model = new Dosen($pdo);
-
         $id = $_POST['id'] ?? null;
 
         if (!$id) {
@@ -110,27 +145,61 @@ class DosenController
             exit;
         }
 
-        $model->update($id, [
-            'nidn' => $_POST['nidn'],
-            'nama' => $_POST['nama'],
-            'bidang_keahlian' => $_POST['bidang_keahlian']
-        ]);
+        $nidn = trim($_POST['nidn'] ?? '');
+        $nama = trim($_POST['nama'] ?? '');
+        $bidang_keahlian = trim(
+            $_POST['bidang_keahlian'] ?? ''
+        );
+
+        try {
+
+            // Membuat object Dosen
+            $model = new Dosen();
+
+            // Menggunakan Setter
+            $model->setNidn($nidn);
+            $model->setNama($nama);
+            $model->setBidangKeahlian(
+                $bidang_keahlian
+            );
+
+            // Menggunakan Getter
+            $this->repo->update((int) $id, [
+                'nidn' => $model->getNidn(),
+                'nama' => $model->getNama(),
+                'bidang_keahlian' =>
+                    $model->getBidangKeahlian()
+            ]);
+
+        } catch (InvalidArgumentException $e) {
+
+            echo "<h2>Terjadi Kesalahan</h2>";
+            echo "<p>{$e->getMessage()}</p>";
+            echo "<a href='/si-akademik/public/dosen'>";
+            echo "Kembali";
+            echo "</a>";
+
+            return;
+        }
 
         header('Location: /si-akademik/public/dosen');
         exit;
     }
 
-    // ==========================================
-    // STEP 6: DELETE
-    // ==========================================
+    // =========================
+    // DELETE
+    // =========================
 
-    public function delete($id)
+    public function delete()
     {
-        global $pdo;
+        $id = $_GET['id'] ?? $_POST['id'] ?? null;
 
-        $model = new Dosen($pdo);
+        if (!$id) {
+            header('Location: /si-akademik/public/dosen');
+            exit;
+        }
 
-        $model->delete($id);
+        $this->repo->delete((int) $id);
 
         header('Location: /si-akademik/public/dosen');
         exit;
