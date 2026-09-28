@@ -1,3 +1,4 @@
+
 <?php
 
 require_once __DIR__ . '/../Models/Dosen.php';
@@ -15,7 +16,6 @@ class DosenController
     public function __construct()
     {
         $database = new Database();
-
         $this->repo = new DosenRepository($database);
     }
 
@@ -26,7 +26,6 @@ class DosenController
     public function index()
     {
         $dosen = $this->repo->all();
-
         require_once __DIR__ . '/../Views/dosen/index.php';
     }
 
@@ -74,17 +73,27 @@ class DosenController
             $_POST['bidang_keahlian'] ?? ''
         );
 
-        try {
+        // Validasi duplikat NIDN
+        if (
+            $nidn !== '' &&
+            $this->repo->findByNidn($nidn)
+        ) {
+            echo "<h2>Terjadi Kesalahan</h2>";
+            echo "<p>NIDN sudah terdaftar. Gunakan NIDN lain.</p>";
+            echo "<a href='/si-akademik/public/dosen/create'>";
+            echo "Kembali";
+            echo "</a>";
+            return;
+        }
 
+        try {
             // Membuat object Dosen
             $model = new Dosen();
 
             // Menggunakan Setter
             $model->setNidn($nidn);
             $model->setNama($nama);
-            $model->setBidangKeahlian(
-                $bidang_keahlian
-            );
+            $model->setBidangKeahlian($bidang_keahlian);
 
             // Menggunakan Getter
             $this->repo->create([
@@ -95,13 +104,13 @@ class DosenController
             ]);
 
         } catch (InvalidArgumentException $e) {
-
             echo "<h2>Terjadi Kesalahan</h2>";
-            echo "<p>{$e->getMessage()}</p>";
+            echo "<p>" .
+                htmlspecialchars($e->getMessage()) .
+                "</p>";
             echo "<a href='/si-akademik/public/dosen/create'>";
             echo "Kembali";
             echo "</a>";
-
             return;
         }
 
@@ -145,26 +154,42 @@ class DosenController
             exit;
         }
 
+        $id = (int) $id;
+
         $nidn = trim($_POST['nidn'] ?? '');
         $nama = trim($_POST['nama'] ?? '');
         $bidang_keahlian = trim(
             $_POST['bidang_keahlian'] ?? ''
         );
 
-        try {
+        // Validasi duplikat NIDN milik dosen lain
+        if ($nidn !== '') {
+            $existing = $this->repo->findByNidn($nidn);
 
+            if (
+                $existing &&
+                (int) $existing['id'] !== $id
+            ) {
+                echo "<h2>Terjadi Kesalahan</h2>";
+                echo "<p>NIDN sudah digunakan dosen lain.</p>";
+                echo "<a href='/si-akademik/public/dosen/edit?id=$id'>";
+                echo "Kembali";
+                echo "</a>";
+                return;
+            }
+        }
+
+        try {
             // Membuat object Dosen
             $model = new Dosen();
 
             // Menggunakan Setter
             $model->setNidn($nidn);
             $model->setNama($nama);
-            $model->setBidangKeahlian(
-                $bidang_keahlian
-            );
+            $model->setBidangKeahlian($bidang_keahlian);
 
             // Menggunakan Getter
-            $this->repo->update((int) $id, [
+            $this->repo->update($id, [
                 'nidn' => $model->getNidn(),
                 'nama' => $model->getNama(),
                 'bidang_keahlian' =>
@@ -172,13 +197,13 @@ class DosenController
             ]);
 
         } catch (InvalidArgumentException $e) {
-
             echo "<h2>Terjadi Kesalahan</h2>";
-            echo "<p>{$e->getMessage()}</p>";
-            echo "<a href='/si-akademik/public/dosen'>";
+            echo "<p>" .
+                htmlspecialchars($e->getMessage()) .
+                "</p>";
+            echo "<a href='/si-akademik/public/dosen/edit?id=$id'>";
             echo "Kembali";
             echo "</a>";
-
             return;
         }
 
