@@ -1,7 +1,6 @@
 
 ```
-si-akademik
-├─ app
+si-akademik polije
 │  ├─ Controllers
 │  │  ├─ AuthController.php
 │  │  ├─ DosenController.php
