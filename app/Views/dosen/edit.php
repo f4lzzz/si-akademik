@@ -66,7 +66,7 @@
 
                 <div class="mb-3">
                     <label class="form-label">
-                        Bidang Keahlian
+                        Bidang Keahliann
                     </label>
 
                     <input
